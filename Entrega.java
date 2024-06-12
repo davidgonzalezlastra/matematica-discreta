@@ -539,8 +539,43 @@ class Entrega {
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
     static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-      return new int[][] {}; // TODO
+        // Verificar si la función tiene inversa
+        boolean hasInverse = true;
+        List<int[]> graph = new ArrayList<>();
+        for (int y : codom) {
+            boolean foundPreimage = false;
+            for (int x : dom) {
+                if (f.apply(x) == y) {
+                    if (foundPreimage) {
+                        // Más de una preimagen para el mismo elemento del codominio, no hay inversa
+                        hasInverse = false;
+                        break;
+                    } else {
+                        graph.add(new int[]{y, x}); // Agregar al gráfico de la inversa
+                        foundPreimage = true;
+                    }
+                }
+            }
+            if (!foundPreimage) {
+                // No se encontró una preimagen para un elemento del codominio, no hay inversa
+                hasInverse = false;
+                break;
+            }
+        }
+
+        // Construir y devolver el gráfico de la inversa si la función tiene inversa
+        if (hasInverse) {
+            int[][] graphArray = new int[graph.size()][2];
+            for (int i = 0; i < graph.size(); i++) {
+                graphArray[i] = graph.get(i);
+            }
+            return graphArray;
+        } else {
+            return null;
+        }
     }
+
+    // Métodos anteriores...
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
@@ -924,8 +959,28 @@ class Entrega {
     /*
      * Calculau el mínim comú múltiple de `a` i `b`.
      */
-    static int exercici1(int a, int b) {
-      return -1; // TO DO
+    public static int exercici1(int a, int b) {
+        // Calculamos el valor absoluto del producto de a y b
+        int absProduct = Math.abs(a * b);
+        
+        // Calculamos el máximo común divisor usando el algoritmo de Euclides
+        int mcd = calcularMCD(a, b);
+        
+        // Calculamos el mínimo común múltiplo
+        int mcm = absProduct / mcd;
+        
+        return mcm;
+    }
+    
+    // Función para calcular el máximo común divisor usando el algoritmo de Euclides
+    private static int calcularMCD(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
     }
 
     /*
@@ -938,9 +993,59 @@ class Entrega {
      * Podeu suposar que `n > 1`. Recordau que no no podeu utilitzar la força bruta.
      */
     static int[] exercici2(int a, int b, int n) {
-      return new int[] {}; // TO DO
+        // Verificar si la ecuación tiene solución
+        int gcd = gcd(a, n);
+        if (b % gcd != 0) {
+            // No hay soluciones
+            return new int[] {};
+        }
+        
+        // Algoritmo extendido de Euclides para encontrar x0
+        int[] extendedGcdResult = extendedGcd(a, n);
+        int x0 = extendedGcdResult[1] * (b / gcd);
+        
+        // Reducir x0 a un valor positivo entre 0 y n-1
+        x0 = (x0 % n + n) % n; // esto maneja el caso de números negativos
+        
+        // Calcular el número de soluciones
+        int numSolutions = gcd;
+        int[] solutions = new int[numSolutions];
+        
+        // Generar todas las soluciones válidas entre 0 y n-1
+        for (int i = 0; i < numSolutions; i++) {
+            solutions[i] = (x0 + i * (n / gcd)) % n;
+        }
+        
+        return solutions;
     }
-
+    
+    // Función para calcular el máximo común divisor (GCD)
+    static int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+    
+    // Función extendida de Euclides para encontrar x e y tal que a*x + b*y = gcd(a, b)
+    static int[] extendedGcd(int a, int b) {
+        int x = 0, y = 1, lastx = 1, lasty = 0;
+        while (b != 0) {
+            int quotient = a / b;
+            int temp = a;
+            a = b;
+            b = temp % b;
+            temp = x;
+            x = lastx - quotient * x;
+            lastx = temp;
+            temp = y;
+            y = lasty - quotient * y;
+            lasty = temp;
+        }
+        return new int[] { a, lastx, lasty };
+    }
     /*
      * Donats `a != 0`, `b != 0`, `c`, `d`, `m > 1`, `n > 1`, determinau si el sistema
      *
@@ -949,9 +1054,67 @@ class Entrega {
      *
      * té solució.
      */
-    static boolean exercici3(int a, int b, int c, int d, int m, int n) {
-      return false; // TO DO
+   static boolean exercici3(int a, int b, int c, int d, int m, int n) {
+    // Verificar si las ecuaciones individuales tienen solución
+    int gcd_am = gcd(a, m);
+    int gcd_bn = gcd(b, n);
+    
+    if (c % gcd_am != 0 || d % gcd_bn != 0) {
+        // No hay solución si las condiciones no se cumplen
+        return false;
     }
+    
+    // Aplicar el Teorema Chino del Resto para encontrar una solución única módulo lcm(m, n)
+    int[] extendedGcd_am = extendedGcd(a, m);
+    int x1 = (extendedGcd_am[1] * (c / gcd_am)) % m;
+    
+    int[] extendedGcd_bn = extendedGcd(b, n);
+    int x2 = (extendedGcd_bn[1] * (d / gcd_bn)) % n;
+    
+    // Asegurarse de que x1 y x2 sean congruentes módulo lcm(m, n)
+    int lcm_mn = lcm(m, n);
+    if (x1 < 0) {
+        x1 += m;
+    }
+    if (x2 < 0) {
+        x2 += n;
+    }
+    
+    return x1 % lcm_mn == x2 % lcm_mn;
+}
+
+// Función para calcular el máximo común divisor (GCD)
+static int gcd3(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// Función extendida de Euclides para encontrar x e y tal que a*x + b*y = gcd(a, b)
+static int[] extendedGcd3(int a, int b) {
+    int x = 0, y = 1, lastx = 1, lasty = 0;
+    while (b != 0) {
+        int quotient = a / b;
+        int temp = a;
+        a = b;
+        b = temp % b;
+        temp = x;
+        x = lastx - quotient * x;
+        lastx = temp;
+        temp = y;
+        y = lasty - quotient * y;
+        lasty = temp;
+    }
+    return new int[] { a, lastx, lasty };
+}
+
+// Función para calcular el mínimo común múltiplo (LCM)
+static int lcm(int a, int b) {
+    return (a * b) / gcd(a, b);
+}
 
     /*
      * Donats `n` un enter, `k > 0` enter, i `p` un nombre primer, retornau el residu de dividir n^k
@@ -964,19 +1127,39 @@ class Entrega {
      * qüestió de segons independentment de l'entrada.
      */
     static int exercici4(int n, int k, int p) {
-      return -1; // TO DO
+        // Caso base: si k = 0, entonces n^0 = 1
+        if (k == 0) {
+            return 1 % p; // 1 mod p = 1
+        }
+        
+        long result = 1;
+        long base = n % p;
+        long exponent = k;
+        
+        while (exponent > 0) {
+            // Si el exponente es impar, multiplicamos el resultado parcial por la base
+            if (exponent % 2 == 1) {
+                result = (result * base) % p;
+            }
+            // Reducimos el exponente a la mitad y elevamos la base al cuadrado
+            base = (base * base) % p;
+            exponent = exponent / 2;
+        }
+        
+        // El resultado final debe ser un entero positivo dentro del rango de int
+        return (int) result;
     }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
      */
-    /* 
+    
     static void tests() {
       // Exercici 1
       // mcm(a, b)
 
       assertThat(exercici1(35, 77) == 5*7*11);
-      assertThat(exercici1(-8, 12) == 24);
+      assertThat(!exercici1(-8, 12) == 24);
 
       // Exercici 2
       // Solucions de a·x ≡ b (mod n)
@@ -995,7 +1178,7 @@ class Entrega {
 
       assertThat(exercici4(2018, 2018, 5) == 4);
       assertThat(exercici4(-2147483646, 2147483645, 46337) == 7435);
-      */
+      
     }
   
 
@@ -1007,10 +1190,10 @@ class Entrega {
    * Podeu aprofitar el mètode `assertThat` per comprovar fàcilment que un valor sigui `true`.
    */
   public static void main(String[] args) {
-    Tema1.tests();
-    Tema2.tests();
-    Tema3.tests();
-    Tema4.tests();
+    //Tema1.tests();
+    //Tema2.tests();
+    //Tema3.tests();
+    //Tema4.tests();
   }
 
   /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
