@@ -255,6 +255,90 @@ class Entrega {
             (y, z) -> y*z == 2
           )
       );
+
+           //* FIN PRUEBAS EXTRA EJERCICIO 2 **
+assertThat(
+    exercici3(
+            new int[] { 1, 2, 3, 4 },
+            x -> x % 2 == 0,
+            (x, y) -> x + y > 4
+    )
+);
+
+assertThat(
+    exercici3(
+            new int[] { 5, 10, 15, 20 },
+            x -> x > 5,
+            (x, y) -> x > y
+    )
+);
+//És cert que ∃x : ∀y : Q(x, y) -> P(x) ?
+
+assertThat(
+    !exercici3(
+            new int[] { 1, 2, 3, 4 },
+            x -> x % 2 == 1,
+            (x, y) -> (x + y) > 4
+    )
+);
+
+assertThat(
+    //siempre será true ya que Q(x,y) nunca se cumple por lo tanto
+    //por reglas de implicacion será true siempre
+    exercici3(
+            new int[] { 1, 2, 3, 4 },
+            x -> x > 4,
+            (x, y) -> (x + y) > 10
+    )
+);
+
+assertThat(
+    //siempre sera falso ya que nunca se cumple P(x)
+    !exercici3(
+            new int[] { 1, 2, 3, 4 },
+            x -> x < 1,
+            (x, y) -> (x + y) <= 10
+    )
+);
+assertThat(
+    exercici4(
+            new int[] { 1, 2, 3 },
+            (x, z) -> x == z,
+            (y, z) -> y == z
+    )
+);
+//Caso de prueba único Y
+assertThat(
+    exercici4(
+            new int[] { 1, 2, 3},
+            (x, z) -> x % 2 == z % 2,
+            (y, z) -> y == z
+));
+//Caso sin un unico Y
+assertThat(
+    !exercici4(
+            new int[] { 1, 2, 3, 4},
+            (x, z) -> x % 2 == z % 2,
+            (y, z) -> y == z
+));
+// X sin un Y unico
+assertThat(
+    exercici4(
+            new int[] { 1, 2, 3 },
+            (x, z) -> x <= z,
+            (y, z) -> y <= z
+    )
+);
+
+//todos los z tiene un unico
+assertThat(
+    exercici4(
+            new int[] { 1, 2, 3, 4 },
+            (x, z) -> x > z,
+            (y, z) -> y > z
+    )
+);
+
     }
   }
 
@@ -601,6 +685,46 @@ class Entrega {
             new int[] { 0 }
           )
           == 2
+      );
+
+      assertThat(
+              exercici1(
+                      new int[] { 3, 4, 5 },
+                      new int[] { 1,2,3 },
+                      new int[] { 4, 5}
+              ) == 5
+      );
+
+      assertThat(
+              exercici1(
+                      new int[] { 0, 2, 4, 6 },
+                      new int[] { 1, 3, 5 },
+                      new int[] { 0, 6 }
+              ) == 14
+      );
+
+      assertThat(
+              exercici1(
+                      new int[] { 1, 2, 3, 4, 5 },
+                      new int[] { 3, 4, 5, 6, 7 },
+                      new int[] { 2, 5 }
+              ) == 21
+      );
+
+      assertThat(
+              exercici1(
+                      new int[] { 1, 2, 3 },
+                      new int[] { 4, 5, 6 },
+                      new int[] { }
+              ) == 18
+      );
+
+      assertThat(
+              exercici1(
+                      new int[] { 1, 2, 3 },
+                      new int[] { 4, 5, 6 },
+                      new int[] { 1 }
+              ) == 12
       );
 
       // Exercici 2
